@@ -332,7 +332,7 @@ function confirmarLimpar(tipo) {
 }
 function renderFuncoes() {
   const el = document.getElementById('lista-funcoes');
-  document.getElementById('count-funcoes').textContent = dados.funcoes.length + (dados.funcoes.length!==1?' funções':' função');
+  document.getElementById('count-funcoes').textContent = dados.funcoes.length + (dados.funcoes.length !== 1 ? ' funções' : ' função');
   if (!dados.funcoes.length) { el.innerHTML = '<p class="vazio">Nenhuma função cadastrada.</p>'; return; }
   el.innerHTML = dados.funcoes.map((f, i) => {
     if (editandoFuncao === i) {

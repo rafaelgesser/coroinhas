@@ -1,26 +1,33 @@
-const CACHE = 'coroinhas-v1';
+const CACHE = 'coroinhas-v2';
 const ASSETS = [
-  '/coroinhas/',
-  '/coroinhas/index.html',
-  '/coroinhas/manifest.json'
+  'https://rafaelgesser.github.io/coroinhas/',
+  'https://rafaelgesser.github.io/coroinhas/index.html',
+  'https://rafaelgesser.github.io/coroinhas/manifest.json',
+  'https://rafaelgesser.github.io/coroinhas/icon-192.png',
+  'https://rafaelgesser.github.io/coroinhas/icon-512.png'
 ];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then(c => c.addAll(ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).catch(() => caches.match('/coroinhas/')))
+    caches.match(e.request)
+      .then(cached => cached || fetch(e.request)
+        .catch(() => caches.match('https://rafaelgesser.github.io/coroinhas/'))
+      )
   );
 });
