@@ -199,10 +199,6 @@
     </div>
     <div id="export-preview" class="export-preview"></div>
     <button class="btn btn-exportar btn-bloco" onclick="compartilhar()">📲 Compartilhar</button>
-    <div class="separador"></div>
-    <button class="btn btn-backup btn-bloco" onclick="salvarBackup()">💾 Salvar backup</button>
-    <input type="file" id="input-backup" accept=".json" style="display:none" onchange="carregarBackup(event)">
-    <button class="btn btn-backup btn-bloco" onclick="document.getElementById('input-backup').click()">📂 Carregar backup</button>
   </div>
 </div>
 
@@ -715,10 +711,18 @@ function renderExport() {
 
 async function compartilhar() {
   const texto = gerarTexto();
+  // GoNative (WebView) — usa API nativa deles
+  if (window.gonative && gonative.share) {
+    gonative.share.sharePage({ text: texto });
+    return;
+  }
+  // PWA / navegador moderno
   if (navigator.share) {
-    try { await navigator.share({ text: texto }); }
-    catch(e) { if (e.name !== 'AbortError') copiarFallback(texto); }
-  } else { copiarFallback(texto); }
+    try { await navigator.share({ text: texto }); return; }
+    catch(e) { if (e.name === 'AbortError') return; }
+  }
+  // Fallback — copia para área de transferência
+  copiarFallback(texto);
 }
 function copiarFallback(texto) {
   if (navigator.clipboard) { navigator.clipboard.writeText(texto).then(() => alert('✅ Copiado! Cole no WhatsApp.')); }
@@ -739,6 +743,15 @@ document.getElementById('input-hora').addEventListener('input', e => { dados.eve
 // ─── BACKUP ───
 function salvarBackup() {
   const json = JSON.stringify(dados, null, 2);
+  // GoNative não suporta download direto — oferece copiar o JSON
+  if (window.gonative) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(json).then(() => alert('✅ Backup copiado! Cole num bloco de notas e salve como .json'));
+    } else {
+      prompt('Copie o texto abaixo e salve num arquivo .json:', json);
+    }
+    return;
+  }
   const blob = new Blob([json], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url;
