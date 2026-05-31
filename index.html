@@ -751,7 +751,11 @@ async function compartilhar() {
   const texto = gerarTexto();
   // GoNative (WebView) — usa API nativa deles
   if (window.gonative && gonative.share) {
-    gonative.share.sharePage({ text: texto });
+    if (gonative.share.shareText) {
+      gonative.share.shareText({ text: texto });
+    } else {
+      gonative.share.sharePage({ text: texto, url: ' ' });
+    }
     return;
   }
   // PWA / navegador moderno
