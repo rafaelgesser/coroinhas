@@ -2,8 +2,8 @@
   "name": "Coroinhas",
   "short_name": "Coroinhas",
   "description": "Distribuição de tarefas para coroinhas",
-  "start_url": "/coroinhas/",
-  "scope": "/coroinhas/",
+  "start_url": "https://rafaelgesser.github.io/coroinhas/",
+  "scope": "https://rafaelgesser.github.io/coroinhas/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#c0112b",
@@ -11,13 +11,13 @@
   "lang": "pt-BR",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "https://rafaelgesser.github.io/coroinhas/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "https://rafaelgesser.github.io/coroinhas/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
