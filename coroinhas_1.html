@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Coroinhas">
+<title>Coroinhas</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vm: #c0112b;
+    --vm-dark: #8c0d1f;
+    --vm-deep: #600a16;
+    --vm-light: #e8244a;
+    --branco: #ffffff;
+    --cinza-claro: #f7f7f7;
+    --cinza: #e0e0e0;
+    --cinza-texto: #888;
+    --texto: #1a1a1a;
+    --sombra: 0 2px 10px rgba(192,17,43,0.10);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cinza-claro);
+    color: var(--texto);
+    min-height: 100vh;
+    padding-bottom: 90px;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--vm);
+    color: var(--branco);
+    padding: 16px 20px 12px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 3px 14px rgba(192,17,43,0.35);
+  }
+  .header-cross { font-size: 18px; margin-bottom: 1px; }
+  header h1 {
+    font-family: 'Lora', serif;
+    font-size: 21px; font-weight: 600;
+    letter-spacing: 1px; color: var(--branco);
+  }
+  header p { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+
+  /* NAV */
+  nav {
+    display: flex;
+    background: var(--vm-dark);
+    position: sticky; top: 62px; z-index: 99;
+    border-bottom: 2px solid var(--vm-light);
+  }
+  nav button {
+    flex: 1; background: none; border: none;
+    color: rgba(255,255,255,0.5);
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px; font-weight: 700;
+    padding: 10px 4px 9px;
+    cursor: pointer; transition: color 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    letter-spacing: 0.3px; text-transform: uppercase;
+  }
+  nav button .ico { font-size: 17px; }
+  nav button.ativo { color: var(--branco); border-bottom: 2.5px solid var(--branco); margin-bottom: -2px; }
+
+  /* TELAS */
+  .tela { display: none; padding: 14px 14px 0; }
+  .tela.ativa { display: block; }
+  .secao-titulo {
+    font-family: 'Lora', serif;
+    font-size: 18px; font-weight: 600;
+    color: var(--vm); margin-bottom: 12px; margin-top: 2px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--branco);
+    border-radius: var(--radius);
+    box-shadow: var(--sombra);
+    padding: 14px; margin-bottom: 12px;
+  }
+
+  /* INPUTS */
+  input[type=text] {
+    width: 100%; border: 1.5px solid var(--cinza);
+    border-radius: 10px; padding: 10px 12px;
+    font-family: 'Nunito', sans-serif; font-size: 15px;
+    color: var(--texto); background: var(--cinza-claro);
+    outline: none; transition: border 0.2s;
+  }
+  input[type=text]:focus { border-color: var(--vm); background: #fff; }
+  .linha-input { display: flex; gap: 8px; margin-bottom: 12px; }
+  .linha-input input { flex: 1; }
+
+  /* BOTÕES */
+  .btn {
+    border: none; border-radius: 10px;
+    padding: 10px 16px;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-vm { background: var(--vm); color: var(--branco); }
+  .btn-vm:active { background: var(--vm-dark); }
+  .btn-bloco { display: block; width: 100%; padding: 13px; font-size: 15px; border-radius: 12px; margin-bottom: 8px; }
+  .btn-perigo { background: none; border: none; color: #c0392b; font-size: 17px; padding: 5px 7px; cursor: pointer; }
+  .btn-editar { background: none; border: none; color: var(--vm); font-size: 16px; padding: 5px 7px; cursor: pointer; }
+  .btn-limpar {
+    background: none; border: 1.5px solid var(--cinza);
+    color: var(--cinza-texto); font-family: 'Nunito', sans-serif;
+    font-size: 13px; font-weight: 700; border-radius: 8px;
+    padding: 7px 12px; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-limpar:active { border-color: #c0392b; color: #c0392b; }
+  .btn-exportar { background: var(--vm); color: var(--branco); }
+  .btn-backup { background: var(--cinza-claro); color: var(--cinza-texto); border: 1.5px solid var(--cinza); }
+
+  /* LISTA ITEMS */
+  .lista-item {
+    display: flex; align-items: center;
+    padding: 9px 10px;
+    background: var(--cinza-claro);
+    border-radius: 10px; margin-bottom: 6px;
+    gap: 6px;
+  }
+  .lista-item span.nome { flex: 1; font-size: 15px; font-weight: 600; }
+  .badge-count {
+    font-size: 11px; background: var(--vm); color: var(--branco);
+    border-radius: 20px; padding: 2px 8px; white-space: nowrap;
+  }
+  .acoes { display: flex; gap: 0; }
+
+  /* EDIT INLINE */
+  .edit-row {
+    display: flex; gap: 6px; margin-bottom: 6px; align-items: center;
+  }
+  .edit-row input { flex: 1; padding: 8px 10px; font-size: 14px; }
+  .btn-salvar { background: var(--vm); color: #fff; border: none; border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer; font-size: 13px; }
+  .btn-cancelar { background: var(--cinza); color: var(--texto); border: none; border-radius: 8px; padding: 8px 12px; font-weight: 700; cursor: pointer; font-size: 13px; }
+
+  /* CABEÇALHO DA LISTA */
+  .lista-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  }
+  .lista-header-titulo { font-size: 13px; color: var(--cinza-texto); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* DISTRIBUIÇÃO */
+  .tarefa-bloco {
+    background: var(--branco); border-radius: var(--radius);
+    box-shadow: var(--sombra); padding: 13px; margin-bottom: 12px;
+    border-left: 3px solid var(--vm);
+  }
+  .tarefa-nome {
+    font-family: 'Lora', serif; font-size: 15px; font-weight: 600;
+    color: var(--vm-dark); margin-bottom: 9px;
+  }
+  .pessoas-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+  .chip {
+    background: var(--cinza-claro); border-radius: 20px;
+    padding: 6px 13px; font-size: 13px; font-weight: 700;
+    color: var(--texto); display: flex; align-items: center; gap: 5px;
+    cursor: pointer; border: 1.5px solid var(--cinza); transition: all 0.15s; user-select: none;
+  }
+  .chip.selecionado { background: var(--vm); color: var(--branco); border-color: var(--vm-dark); }
+  .atrib-texto { font-size: 12px; color: var(--cinza-texto); }
+  .info-box {
+    background: #fff5f6; border-left: 3px solid var(--vm-light);
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 13px; color: var(--cinza-texto); margin-bottom: 13px;
+  }
+
+  /* EXPORTAR */
+  .tabs-visual { display: flex; gap: 8px; margin-bottom: 14px; }
+  .tab-btn {
+    flex: 1; padding: 9px; border: 1.5px solid var(--cinza);
+    border-radius: 10px; background: var(--branco);
+    font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
+    color: var(--cinza-texto); cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.ativo { background: var(--vm); color: var(--branco); border-color: var(--vm); }
+  .export-preview {
+    background: #111; color: #eee; font-family: monospace;
+    font-size: 13px; line-height: 1.8; padding: 14px;
+    border-radius: 12px; white-space: pre-wrap;
+    margin-bottom: 14px; max-height: 300px; overflow-y: auto;
+  }
+  .evento-label { font-size: 13px; color: var(--cinza-texto); margin-bottom: 5px; font-weight: 600; }
+  .vazio { text-align: center; color: var(--cinza-texto); font-size: 14px; padding: 18px 0; }
+  .separador { height: 1px; background: var(--cinza); margin: 12px 0; }
+
+  /* MODAL CONFIRM */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .overlay.vis { display: flex; }
+  .modal {
+    background: var(--branco); border-radius: 16px;
+    padding: 24px; max-width: 300px; width: 90%; text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  }
+  .modal h3 { font-size: 17px; margin-bottom: 10px; color: var(--vm); }
+  .modal p { font-size: 14px; color: var(--cinza-texto); margin-bottom: 18px; }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btns button { flex: 1; padding: 11px; border-radius: 10px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; border: none; cursor: pointer; }
+  .modal-confirmar { background: #c0392b; color: #fff; }
+  .modal-cancelar { background: var(--cinza); color: var(--texto); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-cross">✝</div>
+  <h1>COROINHAS</h1>
+  <p>Distribuição de Tarefas</p>
+</header>
+
+<nav>
+  <button class="ativo" onclick="irPara('funcoes')"><span class="ico">📋</span>Funções</button>
+  <button onclick="irPara('coroinhas')"><span class="ico">👤</span>Coroinhas</button>
+  <button onclick="irPara('distribuicao')"><span class="ico">🔗</span>Distribuir</button>
+  <button onclick="irPara('exportar')"><span class="ico">📤</span>Exportar</button>
+</nav>
+
+<!-- FUNÇÕES -->
+<div id="tela-funcoes" class="tela ativa">
+  <p class="secao-titulo">Funções</p>
+  <div class="card">
+    <div class="linha-input">
+      <input type="text" id="input-funcao" placeholder="Nova função..." maxlength="60">
+      <button class="btn btn-vm" onclick="adicionarFuncao()">+ Add</button>
+    </div>
+    <div class="lista-header">
+      <span class="lista-header-titulo" id="count-funcoes">0 funções</span>
+      <div style="display:flex;gap:6px">
+        <button class="btn-limpar" onclick="carregarFuncoesPadrao()">↺ Padrão</button>
+        <button class="btn-limpar" onclick="confirmarLimpar('funcoes')">🗑 Limpar</button>
+      </div>
+    </div>
+    <div id="lista-funcoes"><p class="vazio">Nenhuma função cadastrada.</p></div>
+  </div>
+</div>
+
+<!-- COROINHAS -->
+<div id="tela-coroinhas" class="tela">
+  <p class="secao-titulo">Coroinhas</p>
+  <div class="card">
+    <div class="linha-input">
+      <input type="text" id="input-coroinha" placeholder="Nome do coroinha..." maxlength="40">
+      <button class="btn btn-vm" onclick="adicionarCoroinha()">+ Add</button>
+    </div>
+    <div class="lista-header">
+      <span class="lista-header-titulo" id="count-coroinhas">0 coroinhas</span>
+      <button class="btn-limpar" onclick="confirmarLimpar('coroinhas')">🗑 Limpar tudo</button>
+    </div>
+    <div id="lista-coroinhas"><p class="vazio">Nenhum coroinha cadastrado.</p></div>
+  </div>
+</div>
+
+<!-- DISTRIBUIÇÃO -->
+<div id="tela-distribuicao" class="tela">
+  <p class="secao-titulo">Distribuição</p>
+  <div class="info-box">Toque no nome do coroinha para atribuí-lo à função. Toque novamente para remover.</div>
+  <div id="lista-distribuicao"><p class="vazio">Cadastre funções e coroinhas primeiro.</p></div>
+</div>
+
+<!-- EXPORTAR -->
+<div id="tela-exportar" class="tela">
+  <p class="secao-titulo">Exportar</p>
+  <div class="card">
+    <p class="evento-label">Nome do evento (opcional)</p>
+    <input type="text" id="input-evento" placeholder="Ex: Missa dominical, Batismo..." style="margin-bottom:10px">
+    <p class="evento-label">Data e hora</p>
+    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+      <input type="date" id="input-data" style="flex:1;border:1.5px solid var(--cinza);border-radius:10px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:14px;color:var(--texto);background:var(--cinza-claro);outline:none;">
+      <input type="time" id="input-hora" style="width:110px;border:1.5px solid var(--cinza);border-radius:10px;padding:9px 10px;font-family:'Nunito',sans-serif;font-size:14px;color:var(--texto);background:var(--cinza-claro);outline:none;">
+      <button class="btn-limpar" onclick="limparDataHora()" title="Limpar data e hora" style="white-space:nowrap">✕</button>
+    </div>
+    <div class="tabs-visual">
+      <button class="tab-btn ativo" id="tab-func" onclick="mudarAba('funcoes')">Por função</button>
+      <button class="tab-btn" id="tab-cor" onclick="mudarAba('coroinhas')">Por coroinha</button>
+    </div>
+    <div id="export-preview" class="export-preview"></div>
+    <button class="btn btn-exportar btn-bloco" onclick="compartilhar()">📲 Compartilhar no WhatsApp</button>
+    <div class="separador"></div>
+    <button class="btn btn-backup btn-bloco" onclick="salvarBackup()">💾 Salvar backup</button>
+    <input type="file" id="input-backup" accept=".json" style="display:none" onchange="carregarBackup(event)">
+    <button class="btn btn-backup btn-bloco" onclick="document.getElementById('input-backup').click()">📂 Carregar backup</button>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAÇÃO -->
+<div class="overlay" id="modal-overlay">
+  <div class="modal">
+    <h3 id="modal-titulo">Confirmar</h3>
+    <p id="modal-msg">Tem certeza?</p>
+    <div class="modal-btns">
+      <button class="modal-cancelar" onclick="fecharModal()">Cancelar</button>
+      <button class="modal-confirmar" id="modal-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FUNCOES_PADRAO = [
+  "Cruz","Tocha","Missal","Cibório","Galheta","Jarra","Bacia",
+  "Manustérgio","Sineta","Purificatório","Ministro","Aguinha",
+  "Cálice","7º dia","Turíbulo","Naveta","Aspérgio","Castiçal"
+];
+
+function carregar() {
+  const raw = localStorage.getItem('coroinhas_v2');
+  if (raw) return JSON.parse(raw);
+  return { funcoes: [...FUNCOES_PADRAO], coroinhas: [], distribuicao: {} };
+}
+
+let dados = carregar();
+let abaExport = 'funcoes';
+let editandoFuncao = null;
+let editandoCoroinha = null;
+
+function salvar() { localStorage.setItem('coroinhas_v2', JSON.stringify(dados)); }
+
+// ─── NAVEGAÇÃO ───
+function irPara(tela) {
+  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('ativo'));
+  document.getElementById('tela-' + tela).classList.add('ativa');
+  const idx = ['funcoes','coroinhas','distribuicao','exportar'].indexOf(tela);
+  document.querySelectorAll('nav button')[idx].classList.add('ativo');
+  editandoFuncao = null; editandoCoroinha = null;
+  if (tela === 'distribuicao') renderDistribuicao();
+  if (tela === 'exportar') renderExport();
+}
+
+// ─── MODAL ───
+let modalCallback = null;
+function confirmar(titulo, msg, cb) {
+  document.getElementById('modal-titulo').textContent = titulo;
+  document.getElementById('modal-msg').textContent = msg;
+  document.getElementById('modal-overlay').classList.add('vis');
+  modalCallback = cb;
+  document.getElementById('modal-ok').onclick = () => { fecharModal(); cb(); };
+}
+function fecharModal() { document.getElementById('modal-overlay').classList.remove('vis'); }
+
+// ─── FUNÇÕES ───
+function adicionarFuncao() {
+  const inp = document.getElementById('input-funcao');
+  const nome = inp.value.trim();
+  if (!nome) return;
+  if (dados.funcoes.map(f=>f.toLowerCase()).includes(nome.toLowerCase())) { alert('Função já cadastrada!'); return; }
+  dados.funcoes.push(nome);
+  salvar(); inp.value = ''; renderFuncoes();
+}
+document.getElementById('input-funcao').addEventListener('keydown', e => { if(e.key==='Enter') adicionarFuncao(); });
+
+function removerFuncao(idx) {
+  const nome = dados.funcoes[idx];
+  confirmar('Remover função', `Remover "${nome}"?`, () => {
+    delete dados.distribuicao[nome];
+    dados.funcoes.splice(idx, 1);
+    salvar(); renderFuncoes();
+  });
+}
+
+function iniciarEdicaoFuncao(idx) {
+  editandoFuncao = idx; renderFuncoes();
+  setTimeout(() => { const el = document.getElementById('edit-funcao-'+idx); if(el) { el.focus(); el.select(); } }, 50);
+}
+
+function salvarEdicaoFuncao(idx) {
+  const inp = document.getElementById('edit-funcao-'+idx);
+  const novoNome = inp ? inp.value.trim() : '';
+  if (!novoNome) { editandoFuncao = null; renderFuncoes(); return; }
+  const nomeAntigo = dados.funcoes[idx];
+  // mover distribuicao
+  if (dados.distribuicao[nomeAntigo]) {
+    dados.distribuicao[novoNome] = dados.distribuicao[nomeAntigo];
+    delete dados.distribuicao[nomeAntigo];
+  }
+  dados.funcoes[idx] = novoNome;
+  editandoFuncao = null; salvar(); renderFuncoes();
+}
+
+function carregarFuncoesPadrao() {
+  confirmar('Carregar funções padrão', 'Isso substituirá a lista atual de funções e limpará as atribuições. Confirmar?', () => {
+    dados.funcoes = [...FUNCOES_PADRAO];
+    dados.distribuicao = {};
+    salvar(); renderFuncoes();
+  });
+}
+
+function confirmarLimpar(tipo) {
+  const label = tipo === 'funcoes' ? 'todas as funções' : 'todos os coroinhas';
+  confirmar('Limpar lista', `Deseja remover ${label}?`, () => {
+    if (tipo === 'funcoes') { dados.funcoes = []; dados.distribuicao = {}; renderFuncoes(); }
+    else { dados.coroinhas = []; for(const k in dados.distribuicao) dados.distribuicao[k] = dados.distribuicao[k].filter(()=>false); renderCoroinhas(); }
+    salvar();
+  });
+}
+
+function renderFuncoes() {
+  const el = document.getElementById('lista-funcoes');
+  document.getElementById('count-funcoes').textContent = dados.funcoes.length + ' função' + (dados.funcoes.length!==1?'ões':'');
+  if (!dados.funcoes.length) { el.innerHTML = '<p class="vazio">Nenhuma função cadastrada.</p>'; return; }
+  el.innerHTML = dados.funcoes.map((f, i) => {
+    if (editandoFuncao === i) {
+      return `<div class="edit-row">
+        <input type="text" id="edit-funcao-${i}" value="${esc(f)}" maxlength="60" onkeydown="if(event.key==='Enter')salvarEdicaoFuncao(${i});if(event.key==='Escape'){editandoFuncao=null;renderFuncoes();}">
+        <button class="btn-salvar" onclick="salvarEdicaoFuncao(${i})">✓</button>
+        <button class="btn-cancelar" onclick="editandoFuncao=null;renderFuncoes()">✕</button>
+      </div>`;
+    }
+    const qt = (dados.distribuicao[f]||[]).length;
+    const badgeF = qt > 0 ? `<span class="badge-count">${qt} 👤</span>` : `<span class="badge-count" style="background:var(--cinza);color:var(--cinza-texto)">— 👤</span>`;
+    return `<div class="lista-item">
+      <span class="nome">${f}</span>
+      ${badgeF}
+      <div class="acoes">
+        <button class="btn-editar" onclick="iniciarEdicaoFuncao(${i})">✏️</button>
+        <button class="btn-perigo" onclick="removerFuncao(${i})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── COROINHAS ───
+function adicionarCoroinha() {
+  const inp = document.getElementById('input-coroinha');
+  const nome = inp.value.trim();
+  if (!nome) return;
+  if (dados.coroinhas.map(c=>c.toLowerCase()).includes(nome.toLowerCase())) { alert('Coroinha já cadastrado!'); return; }
+  dados.coroinhas.push(nome);
+  salvar(); inp.value = ''; renderCoroinhas();
+}
+document.getElementById('input-coroinha').addEventListener('keydown', e => { if(e.key==='Enter') adicionarCoroinha(); });
+
+function removerCoroinha(idx) {
+  const nome = dados.coroinhas[idx];
+  confirmar('Remover coroinha', `Remover "${nome}"?`, () => {
+    dados.coroinhas.splice(idx, 1);
+    for (const k in dados.distribuicao) dados.distribuicao[k] = dados.distribuicao[k].filter(p => p !== nome);
+    salvar(); renderCoroinhas();
+  });
+}
+
+function iniciarEdicaoCoroinha(idx) {
+  editandoCoroinha = idx; renderCoroinhas();
+  setTimeout(() => { const el = document.getElementById('edit-coroinha-'+idx); if(el) { el.focus(); el.select(); } }, 50);
+}
+
+function salvarEdicaoCoroinha(idx) {
+  const inp = document.getElementById('edit-coroinha-'+idx);
+  const novoNome = inp ? inp.value.trim() : '';
+  if (!novoNome) { editandoCoroinha = null; renderCoroinhas(); return; }
+  const nomeAntigo = dados.coroinhas[idx];
+  for (const k in dados.distribuicao) {
+    dados.distribuicao[k] = dados.distribuicao[k].map(p => p === nomeAntigo ? novoNome : p);
+  }
+  dados.coroinhas[idx] = novoNome;
+  editandoCoroinha = null; salvar(); renderCoroinhas();
+}
+
+function renderCoroinhas() {
+  const el = document.getElementById('lista-coroinhas');
+  document.getElementById('count-coroinhas').textContent = dados.coroinhas.length + ' coroinha' + (dados.coroinhas.length!==1?'s':'');
+  if (!dados.coroinhas.length) { el.innerHTML = '<p class="vazio">Nenhum coroinha cadastrado.</p>'; return; }
+  el.innerHTML = dados.coroinhas.map((c, i) => {
+    if (editandoCoroinha === i) {
+      return `<div class="edit-row">
+        <input type="text" id="edit-coroinha-${i}" value="${esc(c)}" maxlength="40" onkeydown="if(event.key==='Enter')salvarEdicaoCoroinha(${i});if(event.key==='Escape'){editandoCoroinha=null;renderCoroinhas();}">
+        <button class="btn-salvar" onclick="salvarEdicaoCoroinha(${i})">✓</button>
+        <button class="btn-cancelar" onclick="editandoCoroinha=null;renderCoroinhas()">✕</button>
+      </div>`;
+    }
+    const qt = Object.values(dados.distribuicao).filter(arr => arr.includes(c)).length;
+    const badgeC = qt > 0 ? `<span class="badge-count">${qt} 📋</span>` : `<span class="badge-count" style="background:var(--cinza);color:var(--cinza-texto)">— 📋</span>`;
+    return `<div class="lista-item">
+      <span class="nome">${c}</span>
+      ${badgeC}
+      <div class="acoes">
+        <button class="btn-editar" onclick="iniciarEdicaoCoroinha(${i})">✏️</button>
+        <button class="btn-perigo" onclick="removerCoroinha(${i})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── DISTRIBUIÇÃO ───
+function toggleCoroinha(funcao, coroinha) {
+  if (!dados.distribuicao[funcao]) dados.distribuicao[funcao] = [];
+  const idx = dados.distribuicao[funcao].indexOf(coroinha);
+  if (idx === -1) dados.distribuicao[funcao].push(coroinha);
+  else dados.distribuicao[funcao].splice(idx, 1);
+  salvar(); renderDistribuicao();
+}
+
+function renderDistribuicao() {
+  const el = document.getElementById('lista-distribuicao');
+  if (!dados.funcoes.length || !dados.coroinhas.length) {
+    el.innerHTML = '<p class="vazio">Cadastre funções e coroinhas primeiro.</p>'; return;
+  }
+  el.innerHTML = dados.funcoes.map(f => {
+    const atrib = dados.distribuicao[f] || [];
+    const chips = dados.coroinhas.map(c => {
+      const sel = atrib.includes(c);
+      return `<span class="chip ${sel?'selecionado':''}" onclick="toggleCoroinha('${esc2(f)}','${esc2(c)}')">${c}${sel?' ✓':''}</span>`;
+    }).join('');
+    return `<div class="tarefa-bloco">
+      <div class="tarefa-nome">📋 ${f}</div>
+      <div class="pessoas-chips">${chips}</div>
+      <div class="atrib-texto">${atrib.length ? atrib.join(' · ') : 'Ninguém atribuído'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── EXPORTAR ───
+function mudarAba(aba) {
+  abaExport = aba;
+  document.getElementById('tab-func').classList.toggle('ativo', aba==='funcoes');
+  document.getElementById('tab-cor').classList.toggle('ativo', aba==='coroinhas');
+  renderExport();
+}
+
+function formatarDataHora() {
+  const d = document.getElementById('input-data').value;
+  const h = document.getElementById('input-hora').value;
+  if (!d && !h) return '';
+  let resultado = '';
+  if (d) {
+    const [ano, mes, dia] = d.split('-');
+    const diasSemana = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+    const diaSem = diasSemana[new Date(d + 'T12:00:00').getDay()];
+    resultado = `${diaSem}, ${dia}/${mes}/${ano}`;
+  }
+  if (h) resultado += (resultado ? ' às ' : '') + h + 'h';
+  return resultado;
+}
+
+function limparDataHora() {
+  document.getElementById('input-data').value = '';
+  document.getElementById('input-hora').value = '';
+  renderExport();
+}
+
+function nomeArquivo() {
+  const evento = document.getElementById('input-evento').value.trim();
+  const d = document.getElementById('input-data').value;
+  const h = document.getElementById('input-hora').value;
+  let nome = 'coroinhas';
+  if (evento) nome += '-' + evento.replace(/[^a-zA-ZÀ-ú0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g,'');
+  if (d) nome += '-' + d.replace(/-/g, '');
+  if (h) nome += '-' + h.replace(':', '');
+  return nome;
+}
+
+function gerarTexto() {
+  const evento = document.getElementById('input-evento').value.trim();
+  const dataHora = formatarDataHora();
+  const linhas = [];
+  linhas.push('✝ COROINHAS — DISTRIBUIÇÃO DE TAREFAS');
+  const cabecalho = [evento, dataHora].filter(Boolean).join(' — ');
+  if (cabecalho) linhas.push('📅 ' + cabecalho);
+  linhas.push('');
+  if (abaExport === 'funcoes') {
+    linhas.push('📋 POR FUNÇÃO:');
+    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
+    dados.funcoes.forEach(f => {
+      const pessoas = dados.distribuicao[f] || [];
+      linhas.push('▸ ' + f);
+      if (pessoas.length) pessoas.forEach(p => linhas.push('   • ' + p));
+      else linhas.push('   (ninguém atribuído)');
+      linhas.push('');
+    });
+  } else {
+    linhas.push('👤 POR COROINHA:');
+    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
+    dados.coroinhas.forEach(c => {
+      const tarefas = dados.funcoes.filter(f => (dados.distribuicao[f]||[]).includes(c));
+      linhas.push('▸ ' + c);
+      if (tarefas.length) tarefas.forEach(t => linhas.push('   • ' + t));
+      else linhas.push('   (sem funções)');
+      linhas.push('');
+    });
+  }
+  return linhas.join('\n');
+}
+
+function renderExport() {
+  document.getElementById('export-preview').textContent = gerarTexto();
+}
+
+async function compartilhar() {
+  const texto = gerarTexto();
+  if (navigator.share) {
+    try {
+      await navigator.share({ text: texto });
+    } catch(e) {
+      if (e.name !== 'AbortError') copiarFallback(texto);
+    }
+  } else {
+    copiarFallback(texto);
+  }
+}
+
+function copiarFallback(texto) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(texto).then(() => alert('✅ Copiado! Cole no WhatsApp.'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = texto; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    alert('✅ Copiado! Cole no WhatsApp.');
+  }
+}
+
+document.getElementById('input-evento').addEventListener('input', renderExport);
+document.getElementById('input-data').addEventListener('input', renderExport);
+document.getElementById('input-hora').addEventListener('input', renderExport);
+
+// ─── BACKUP ───
+function salvarBackup() {
+  const json = JSON.stringify(dados, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = nomeArquivo() + '-backup.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function carregarBackup(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const imp = JSON.parse(e.target.result);
+      if (!imp.funcoes || !imp.coroinhas) throw new Error();
+      confirmar('Carregar backup', 'Isso substituirá todos os dados atuais. Confirmar?', () => {
+        dados = imp; salvar();
+        renderFuncoes(); renderCoroinhas();
+        alert('✅ Backup carregado!');
+      });
+    } catch { alert('Arquivo inválido.'); }
+  };
+  reader.readAsText(file); event.target.value = '';
+}
+
+// ─── UTILS ───
+function esc(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function esc2(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+// ─── INIT ───
+renderFuncoes();
+renderCoroinhas();
+</script>
+</body>
+</html>
