@@ -228,6 +228,31 @@ const N_POSICOES = 6;
 const MISSAL_FIXO_LADO = 'b';
 const MISSAL_FIXO_POS = 0;
 
+const REGRAS_EXCLUSAO = {
+  "Tocha": ["Sineta", "Cruz"],
+  "Sineta": ["Tocha"],
+  "Cruz": ["Tocha"],
+
+  "Galheta": ["Cibório", "Jarra", "Bacia", "Manustérgio"],
+  "Cibório": ["Galheta"],
+  "Jarra": ["Galheta"],
+  "Bacia": ["Galheta"],
+  "Manustérgio": ["Galheta"],
+
+  "Ministro": ["Purificatório", "Aguinha", "Cálice"],
+  "Purificatório": ["Ministro"],
+  "Aguinha": ["Ministro"],
+  "Cálice": ["Ministro"]
+};
+
+function possuiConflito(funcao, coroinha) {
+  const bloqueadas = REGRAS_EXCLUSAO[funcao] || [];
+
+  return bloqueadas.some(f =>
+    (dados.distribuicao[f] || []).includes(coroinha)
+  );
+}
+
 function dadosPadrao() {
   return {
     funcoes: [...FUNCOES_PADRAO],
@@ -416,11 +441,36 @@ function renderCoroinhas() {
 
 // ─── DISTRIBUIÇÃO ───
 function toggleCoroinha(funcao, coroinha) {
-  if (!dados.distribuicao[funcao]) dados.distribuicao[funcao] = [];
+
+  if (!dados.distribuicao[funcao]) {
+    dados.distribuicao[funcao] = [];
+  }
+
   const idx = dados.distribuicao[funcao].indexOf(coroinha);
-  if (idx === -1) dados.distribuicao[funcao].push(coroinha);
-  else dados.distribuicao[funcao].splice(idx, 1);
-  salvar(); renderDistribuicao();
+
+  if (idx === -1) {
+
+    if (possuiConflito(funcao, coroinha)) {
+
+      alert(
+        coroinha +
+        ' já está atribuído a uma função incompatível com ' +
+        funcao
+      );
+
+      return;
+    }
+
+    dados.distribuicao[funcao].push(coroinha);
+
+  } else {
+
+    dados.distribuicao[funcao].splice(idx, 1);
+
+  }
+
+  salvar();
+  renderDistribuicao();
 }
 function renderDistribuicao() {
   const el = document.getElementById('lista-distribuicao');
@@ -565,22 +615,63 @@ function gerarTexto() {
       linhas.push('');
     });
   } else {
-    // posições
-    linhas.push('📍 POSIÇÕES:');
-    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
-    const missalNome = getMissalNome();
-    linhas.push('LADO A          LADO B');
-    linhas.push('─────────────────────────');
-    for (let i = 0; i < N_POSICOES; i++) {
-      const isFixo = i === MISSAL_FIXO_POS;
-      const nA = dados.posicoes.a[i] || '—';
-      const nB = isFixo ? (missalNome ? missalNome + ' (Missal)' : 'Missal') : (dados.posicoes.b[i] || '—');
-      const posA = `${i+1}. ${nA}`;
-      const posB = `${i+1}. ${nB}`;
-      linhas.push(posA.padEnd(16) + posB);
+
+  linhas.push('📍 POSIÇÕES:');
+  linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
+  linhas.push('');
+
+  const missalNome = getMissalNome();
+
+  linhas.push('LADO A');
+  linhas.push('━━━━━━━━━━━━━━');
+
+  let temA = false;
+
+  for (let i = 0; i < N_POSICOES; i++) {
+
+    const nome = dados.posicoes.a[i];
+
+    if (nome) {
+      linhas.push(`${i + 1}. ${nome}`);
+      temA = true;
     }
-    linhas.push('');
   }
+
+  if (!temA) {
+    linhas.push('(nenhuma posição definida)');
+  }
+
+  linhas.push('');
+  linhas.push('LADO B');
+  linhas.push('━━━━━━━━━━━━━━');
+
+  let temB = false;
+
+  if (missalNome) {
+    linhas.push(`${MISSAL_FIXO_POS + 1}. ${missalNome} (Missal)`);
+    temB = true;
+  }
+
+  for (let i = 0; i < N_POSICOES; i++) {
+
+    if (i === MISSAL_FIXO_POS) {
+      continue;
+    }
+
+    const nome = dados.posicoes.b[i];
+
+    if (nome) {
+      linhas.push(`${i + 1}. ${nome}`);
+      temB = true;
+    }
+  }
+
+  if (!temB) {
+    linhas.push('(nenhuma posição definida)');
+  }
+
+  linhas.push('');
+}
   return linhas.join('\n');
 }
 
