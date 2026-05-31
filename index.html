@@ -196,6 +196,7 @@
       <button class="tab-btn ativo" id="tab-func" onclick="mudarAba('funcoes')">Funções</button>
       <button class="tab-btn" id="tab-cor" onclick="mudarAba('coroinhas')">Coroinhas</button>
       <button class="tab-btn" id="tab-pos" onclick="mudarAba('posicoes')">Posições</button>
+      <button class="tab-btn" id="tab-comp" onclick="mudarAba('completo')">Completo</button>
     </div>
     <div id="export-preview" class="export-preview"></div>
     <button class="btn btn-exportar btn-bloco" onclick="compartilhar()">📲 Compartilhar</button>
@@ -619,6 +620,7 @@ function mudarAba(aba) {
   document.getElementById('tab-func').classList.toggle('ativo', aba==='funcoes');
   document.getElementById('tab-cor').classList.toggle('ativo', aba==='coroinhas');
   document.getElementById('tab-pos').classList.toggle('ativo', aba==='posicoes');
+  document.getElementById('tab-comp').classList.toggle('ativo', aba==='completo');
   renderExport();
 }
 
@@ -682,6 +684,42 @@ function gerarTexto() {
       tarefas.length ? tarefas.forEach(t => linhas.push('   • ' + t)) : linhas.push('   (sem funções)');
       linhas.push('');
     });
+  } else if (abaExport === 'completo') {
+    // Por coroinha
+    linhas.push('👤 POR COROINHA:');
+    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
+    dados.coroinhas.forEach(c => {
+      const tarefas = dados.funcoes.filter(f => (dados.distribuicao[f]||[]).includes(c));
+      linhas.push('▸ ' + c);
+      tarefas.length ? tarefas.forEach(t => linhas.push('   • ' + t)) : linhas.push('   (sem funções)');
+      linhas.push('');
+    });
+    // Por função
+    linhas.push('📋 POR FUNÇÃO:');
+    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
+    dados.funcoes.forEach(f => {
+      const pessoas = dados.distribuicao[f] || [];
+      linhas.push('▸ ' + f);
+      pessoas.length ? pessoas.forEach(p => linhas.push('   • ' + p)) : linhas.push('   (ninguém atribuído)');
+      linhas.push('');
+    });
+    // Posições
+    const missalNomeC = getMissalNome();
+    linhas.push('📍 POSIÇÕES:');
+    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
+    linhas.push('');
+    linhas.push('▸ LADO A');
+    for (let i = 0; i < N_POSICOES; i++) {
+      linhas.push(`   ${i+1}. ${dados.posicoes.a[i] || '—'}`);
+    }
+    linhas.push('');
+    linhas.push('▸ LADO B');
+    for (let i = 0; i < N_POSICOES; i++) {
+      const isFixoC = i === MISSAL_FIXO_POS;
+      const nomeC = isFixoC ? (missalNomeC ? missalNomeC + ' (Missal)' : 'Missal') : (dados.posicoes.b[i] || '—');
+      linhas.push(`   ${i+1}. ${nomeC}`);
+    }
+    linhas.push('');
   } else {
     // posições — vertical para ficar legível no WhatsApp
     const missalNome = getMissalNome();
