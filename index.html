@@ -26,7 +26,8 @@
   header h1 { font-family: 'Lora', serif; font-size: 21px; font-weight: 600; letter-spacing: 1px; color: var(--branco); }
   header p { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 1px; }
 
-  nav { display: flex; background: var(--vm-dark); position: sticky; top: 62px; z-index: 99; border-bottom: 2px solid var(--vm-light); overflow-x: auto; }
+  nav { display: flex; background: var(--vm-dark); position: sticky; top: 62px; z-index: 99; border-bottom: 2px solid var(--vm-light); overflow-x: auto; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
   nav button { flex: 1; min-width: 60px; background: none; border: none; color: rgba(255,255,255,0.5); font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 700; padding: 9px 3px 8px; cursor: pointer; transition: color 0.2s; display: flex; flex-direction: column; align-items: center; gap: 3px; letter-spacing: 0.2px; text-transform: uppercase; white-space: nowrap; }
   nav button .ico { font-size: 16px; }
   nav button.ativo { color: var(--branco); border-bottom: 2.5px solid var(--branco); margin-bottom: -2px; }
@@ -73,6 +74,7 @@
   .chip.selecionado { background: var(--vm); color: var(--branco); border-color: var(--vm-dark); }
   .atrib-texto { font-size: 12px; color: var(--cinza-texto); }
   .info-box { background: #fff5f6; border-left: 3px solid var(--vm-light); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--cinza-texto); margin-bottom: 13px; }
+  .distribuicao-acoes { display: flex; gap: 8px; margin-bottom: 8px; }
 
   /* POSIÇÕES */
   .posicoes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
@@ -104,9 +106,33 @@
   .modal-btns button { flex: 1; padding: 11px; border-radius: 10px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; border: none; cursor: pointer; }
   .modal-confirmar { background: #c0392b; color: #fff; }
   .modal-cancelar { background: var(--cinza); color: var(--texto); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #ffcf5c; outline-offset: 2px; }
+
+  /* ── Layout centralizado desktop ── */
+  @media (min-width: 768px) {
+    body { background: #b0b0b0; }
+    .app-shell {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--cinza-claro);
+      min-height: 100vh;
+      box-shadow: 0 0 50px rgba(0,0,0,0.22);
+      position: relative;
+    }
+  }
+  @media (max-width: 430px) {
+    .posicoes-grid { grid-template-columns: 1fr; }
+    .tabs-visual { display: grid; grid-template-columns: 1fr 1fr; }
+    .distribuicao-acoes { flex-direction: column; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+  }
 </style>
 </head>
 <body>
+<div class="app-shell">
 
 <header>
   <div class="header-cross">✝</div>
@@ -114,12 +140,12 @@
   <p>Distribuição de Tarefas</p>
 </header>
 
-<nav>
-  <button class="ativo" onclick="irPara('funcoes')"><span class="ico">📋</span>Funções</button>
-  <button onclick="irPara('coroinhas')"><span class="ico">👤</span>Coroinhas</button>
-  <button onclick="irPara('distribuicao')"><span class="ico">🔗</span>Distribuir</button>
-  <button onclick="irPara('posicoes')"><span class="ico">📍</span>Posições</button>
-  <button onclick="irPara('exportar')"><span class="ico">📤</span>Exportar</button>
+<nav aria-label="Navegação principal">
+  <button class="ativo" aria-current="page" onclick="irPara('funcoes')"><span class="ico" aria-hidden="true">📋</span>Funções</button>
+  <button onclick="irPara('coroinhas')"><span class="ico" aria-hidden="true">👤</span>Coroinhas</button>
+  <button onclick="irPara('distribuicao')"><span class="ico" aria-hidden="true">🔗</span>Distribuir</button>
+  <button onclick="irPara('posicoes')"><span class="ico" aria-hidden="true">📍</span>Posições</button>
+  <button onclick="irPara('exportar')"><span class="ico" aria-hidden="true">📤</span>Exportar</button>
 </nav>
 
 <!-- FUNÇÕES -->
@@ -127,7 +153,8 @@
   <p class="secao-titulo">Funções</p>
   <div class="card">
     <div class="linha-input">
-      <input type="text" id="input-funcao" placeholder="Nova função..." maxlength="60" style="width:100%">
+      <label class="sr-only" for="input-funcao">Nova função</label>
+      <input type="text" id="input-funcao" placeholder="Nova função..." maxlength="60" autocomplete="off" style="width:100%">
       <button class="btn btn-vm" onclick="adicionarFuncao()">+ Add</button>
     </div>
     <div class="lista-header">
@@ -146,7 +173,8 @@
   <p class="secao-titulo">Coroinhas</p>
   <div class="card">
     <div class="linha-input">
-      <input type="text" id="input-coroinha" placeholder="Nome do coroinha..." maxlength="40" style="width:100%">
+      <label class="sr-only" for="input-coroinha">Nome do coroinha</label>
+      <input type="text" id="input-coroinha" placeholder="Nome do coroinha..." maxlength="40" autocomplete="off" style="width:100%">
       <button class="btn btn-vm" onclick="adicionarCoroinha()">+ Add</button>
     </div>
     <div class="lista-header">
@@ -161,6 +189,10 @@
 <div id="tela-distribuicao" class="tela">
   <p class="secao-titulo">Distribuição</p>
   <div class="info-box">Toque no nome do coroinha para atribuí-lo à função. Toque novamente para remover.</div>
+  <div class="distribuicao-acoes">
+    <button class="btn btn-vm" style="flex:1" onclick="confirmarDistribuicaoAutomatica()">✨ Preencher automaticamente</button>
+    <button class="btn btn-backup" onclick="confirmarLimparDistribuicoes()">🗑 Limpar atribuições</button>
+  </div>
   <div id="lista-distribuicao"><p class="vazio">Cadastre funções e coroinhas primeiro.</p></div>
 </div>
 
@@ -184,13 +216,13 @@
 <div id="tela-exportar" class="tela">
   <p class="secao-titulo">Exportar</p>
   <div class="card">
-    <p class="evento-label">Nome do evento (opcional)</p>
+    <label class="evento-label" for="input-evento">Nome do evento (opcional)</label>
     <input type="text" id="input-evento" placeholder="Ex: Missa dominical, Batismo..." style="width:100%;margin-bottom:10px">
-    <p class="evento-label">Data e hora</p>
+    <p class="evento-label" id="data-hora-label">Data e hora</p>
     <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
-      <input type="date" id="input-data" style="flex:1">
-      <input type="time" id="input-hora" style="width:105px">
-      <button class="btn-limpar" onclick="limparDataHora()">✕</button>
+      <input type="date" id="input-data" aria-label="Data do evento" style="flex:1">
+      <input type="time" id="input-hora" aria-label="Horário do evento" style="width:105px">
+      <button class="btn-limpar" aria-label="Limpar data e horário" onclick="limparDataHora()">✕</button>
     </div>
     <div class="tabs-visual">
       <button class="tab-btn ativo" id="tab-func" onclick="mudarAba('funcoes')">Funções</button>
@@ -199,13 +231,27 @@
       <button class="tab-btn" id="tab-comp" onclick="mudarAba('completo')">Completo</button>
     </div>
     <div id="export-preview" class="export-preview"></div>
+    <button class="btn btn-backup btn-bloco" onclick="verificarEscala()">✓ Verificar escala</button>
+    <button class="btn btn-vm btn-bloco" onclick="salvarEscalaNoHistorico()">🗓 Salvar escala no histórico</button>
     <button class="btn btn-exportar btn-bloco" onclick="compartilhar()">📲 Compartilhar</button>
+    <div style="display:flex;gap:8px;margin-bottom:0">
+      <button class="btn btn-bloco" id="btn-img" onclick="gerarImagem()" style="background:var(--vm-dark);color:#fff;flex:1;margin-bottom:0">🖼️ Imagem</button>
+      <button class="btn btn-bloco" id="btn-pdf" onclick="gerarPDF()"    style="background:var(--vm-deep);color:#fff;flex:1;margin-bottom:0">📄 PDF A4</button>
+    </div>
+    <div class="separador"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-backup" style="flex:1" onclick="salvarBackup()">💾 Salvar backup</button>
+      <button class="btn btn-backup" style="flex:1" onclick="document.getElementById('input-backup').click()">📂 Restaurar</button>
+      <input class="sr-only" type="file" id="input-backup" accept="application/json,.json" onchange="carregarBackup(event)">
+    </div>
   </div>
+  <p class="secao-titulo" style="margin-top:18px">Histórico local</p>
+  <div id="lista-historico" class="card"><p class="vazio">Nenhuma escala salva.</p></div>
 </div>
 
 <!-- MODAL -->
-<div class="overlay" id="modal-overlay">
-  <div class="modal">
+<div class="overlay" id="modal-overlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo" aria-describedby="modal-msg">
     <h3 id="modal-titulo">Confirmar</h3>
     <p id="modal-msg">Tem certeza?</p>
     <div class="modal-btns">
@@ -219,7 +265,7 @@
 const FUNCOES_PADRAO = [
   "Cruz","Tocha","Missal","Cibório","Galheta","Jarra","Bacia",
   "Manustérgio","Sineta","Purificatório","Ministro","Aguinha",
-  "Cálice","7º dia","Turíbulo","Naveta","Aspérgio","Castiçal"
+  "Cálice","7º dia","Turíbulo","Naveta","Aspérgio","Castiçal","Batismo"
 ];
 const N_POSICOES = 6;
 const MISSAL_FIXO_LADO = 'b';
@@ -231,18 +277,68 @@ function dadosPadrao() {
     coroinhas: [],
     distribuicao: {},
     posicoes: { a: Array(N_POSICOES).fill(''), b: Array(N_POSICOES).fill('') },
-    evento: { nome: '', data: '', hora: '' }
+    evento: { nome: '', data: '', hora: '' },
+    historico: []
   };
 }
 
+function normalizarDados(origem) {
+  if (!origem || typeof origem !== 'object' || Array.isArray(origem)) throw new Error('Estrutura inválida');
+  const unicos = (lista, limite) => {
+    if (!Array.isArray(lista)) throw new Error('Lista inválida');
+    const vistos = new Set();
+    return lista.map(v => String(v).trim().slice(0, limite)).filter(v => {
+      const chave = v.toLocaleLowerCase('pt-BR');
+      if (!v || vistos.has(chave)) return false;
+      vistos.add(chave); return true;
+    });
+  };
+  const funcoes = unicos(origem.funcoes || [], 60);
+  const coroinhas = unicos(origem.coroinhas || [], 40);
+  const nomes = new Set(coroinhas);
+  const distribuicao = {};
+  const distOrigem = origem.distribuicao && typeof origem.distribuicao === 'object' ? origem.distribuicao : {};
+  funcoes.forEach(f => {
+    distribuicao[f] = Array.isArray(distOrigem[f])
+      ? [...new Set(distOrigem[f].map(String).filter(nome => nomes.has(nome)))]
+      : [];
+  });
+  const posOrigem = origem.posicoes && typeof origem.posicoes === 'object' ? origem.posicoes : {};
+  const lado = chave => Array.from({ length: N_POSICOES }, (_, i) => {
+    const nome = Array.isArray(posOrigem[chave]) ? String(posOrigem[chave][i] || '') : '';
+    return nomes.has(nome) ? nome : '';
+  });
+  const evt = origem.evento && typeof origem.evento === 'object' ? origem.evento : {};
+  const resultado = {
+    funcoes, coroinhas, distribuicao,
+    posicoes: { a: lado('a'), b: lado('b') },
+    evento: {
+      nome: String(evt.nome || '').trim().slice(0, 100),
+      data: /^\d{4}-\d{2}-\d{2}$/.test(evt.data || '') ? evt.data : '',
+      hora: /^([01]\d|2[0-3]):[0-5]\d$/.test(evt.hora || '') ? evt.hora : ''
+    },
+    historico: []
+  };
+  if (Array.isArray(origem.historico)) {
+    resultado.historico = origem.historico.slice(0, 100).map((registro, indice) => {
+      if (!registro || typeof registro !== 'object' || !registro.dados) return null;
+      const escala = normalizarDados({ ...registro.dados, historico: [] });
+      return {
+        id: String(registro.id || `legado-${indice}`).slice(0, 80),
+        salvoEm: /^\d{4}-\d{2}-\d{2}T/.test(registro.salvoEm || '') ? registro.salvoEm : new Date(0).toISOString(),
+        dados: { ...escala, historico: [] }
+      };
+    }).filter(Boolean);
+  }
+  return resultado;
+}
+
 function carregar() {
-  const raw = localStorage.getItem('coroinhas_v3');
-  if (raw) {
-    const d = JSON.parse(raw);
-    // garantir campos novos em dados antigos
-    if (!d.posicoes) d.posicoes = { a: Array(N_POSICOES).fill(''), b: Array(N_POSICOES).fill('') };
-    if (!d.evento) d.evento = { nome: '', data: '', hora: '' };
-    return d;
+  try {
+    const raw = localStorage.getItem('coroinhas_v3');
+    if (raw) return normalizarDados(JSON.parse(raw));
+  } catch (erro) {
+    console.warn('Os dados locais estavam inválidos; os padrões foram restaurados.', erro);
   }
   return dadosPadrao();
 }
@@ -252,7 +348,10 @@ let abaExport = 'funcoes';
 let editandoFuncao = null;
 let editandoCoroinha = null;
 
-function salvar() { localStorage.setItem('coroinhas_v3', JSON.stringify(dados)); }
+function salvar() {
+  try { localStorage.setItem('coroinhas_v3', JSON.stringify(dados)); }
+  catch (erro) { mostrarAviso('Não foi possível salvar os dados neste dispositivo.'); console.error(erro); }
+}
 
 // ─── NAVEGAÇÃO ───
 function irPara(tela) {
@@ -261,6 +360,7 @@ function irPara(tela) {
   document.getElementById('tela-' + tela).classList.add('ativa');
   const idx = ['funcoes','coroinhas','distribuicao','posicoes','exportar'].indexOf(tela);
   document.querySelectorAll('nav button')[idx].classList.add('ativo');
+  document.querySelectorAll('nav button').forEach((b, i) => i === idx ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
   editandoFuncao = null; editandoCoroinha = null;
   if (tela === 'distribuicao') renderDistribuicao();
   if (tela === 'posicoes') renderPosicoes();
@@ -272,9 +372,16 @@ function confirmar(titulo, msg, cb) {
   document.getElementById('modal-titulo').textContent = titulo;
   document.getElementById('modal-msg').textContent = msg;
   document.getElementById('modal-overlay').classList.add('vis');
+  document.getElementById('modal-overlay').setAttribute('aria-hidden', 'false');
+  document.getElementById('modal-ok').focus();
   document.getElementById('modal-ok').onclick = () => { fecharModal(); cb(); };
 }
-function fecharModal() { document.getElementById('modal-overlay').classList.remove('vis'); }
+function fecharModal() {
+  document.getElementById('modal-overlay').classList.remove('vis');
+  document.getElementById('modal-overlay').setAttribute('aria-hidden', 'true');
+}
+document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target.id === 'modal-overlay') fecharModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('modal-overlay').classList.contains('vis')) fecharModal(); });
 
 // ─── FUNÇÕES ───
 function adicionarFuncao() {
@@ -304,6 +411,9 @@ function salvarEdicaoFuncao(idx) {
   const novoNome = inp ? inp.value.trim() : '';
   if (!novoNome) { editandoFuncao = null; renderFuncoes(); return; }
   const nomeAntigo = dados.funcoes[idx];
+  if (dados.funcoes.some((f, i) => i !== idx && f.toLocaleLowerCase('pt-BR') === novoNome.toLocaleLowerCase('pt-BR'))) {
+    mostrarAviso('Essa função já está cadastrada.'); return;
+  }
   if (dados.distribuicao[nomeAntigo]) { dados.distribuicao[novoNome] = dados.distribuicao[nomeAntigo]; delete dados.distribuicao[nomeAntigo]; }
   dados.funcoes[idx] = novoNome;
   editandoFuncao = null; salvar(); renderFuncoes();
@@ -334,18 +444,18 @@ function renderFuncoes() {
   el.innerHTML = dados.funcoes.map((f, i) => {
     if (editandoFuncao === i) {
       return `<div class="edit-row">
-        <input type="text" id="edit-funcao-${i}" value="${esc(f)}" maxlength="60" onkeydown="if(event.key==='Enter')salvarEdicaoFuncao(${i});if(event.key==='Escape'){editandoFuncao=null;renderFuncoes();}">
-        <button class="btn-salvar" onclick="salvarEdicaoFuncao(${i})">✓</button>
-        <button class="btn-cancelar" onclick="editandoFuncao=null;renderFuncoes()">✕</button>
+        <input type="text" aria-label="Editar função" id="edit-funcao-${i}" value="${html(f)}" maxlength="60" onkeydown="if(event.key==='Enter')salvarEdicaoFuncao(${i});if(event.key==='Escape'){editandoFuncao=null;renderFuncoes();}">
+        <button class="btn-salvar" aria-label="Salvar função" onclick="salvarEdicaoFuncao(${i})">✓</button>
+        <button class="btn-cancelar" aria-label="Cancelar edição" onclick="editandoFuncao=null;renderFuncoes()">✕</button>
       </div>`;
     }
     const qt = (dados.distribuicao[f]||[]).length;
     const badge = qt > 0 ? `<span class="badge-count">${qt} 👤</span>` : `<span class="badge-count" style="background:var(--cinza);color:var(--cinza-texto)">— 👤</span>`;
     return `<div class="lista-item">
-      <span class="nome">${f}</span>${badge}
+      <span class="nome">${html(f)}</span>${badge}
       <div class="acoes">
-        <button class="btn-editar" onclick="iniciarEdicaoFuncao(${i})">✏️</button>
-        <button class="btn-perigo" onclick="removerFuncao(${i})">🗑</button>
+        <button class="btn-editar" aria-label="Editar ${html(f)}" onclick="iniciarEdicaoFuncao(${i})">✏️</button>
+        <button class="btn-perigo" aria-label="Remover ${html(f)}" onclick="removerFuncao(${i})">🗑</button>
       </div>
     </div>`;
   }).join('');
@@ -381,6 +491,9 @@ function salvarEdicaoCoroinha(idx) {
   const novoNome = inp ? inp.value.trim() : '';
   if (!novoNome) { editandoCoroinha = null; renderCoroinhas(); return; }
   const nomeAntigo = dados.coroinhas[idx];
+  if (dados.coroinhas.some((c, i) => i !== idx && c.toLocaleLowerCase('pt-BR') === novoNome.toLocaleLowerCase('pt-BR'))) {
+    mostrarAviso('Esse coroinha já está cadastrado.'); return;
+  }
   for (const k in dados.distribuicao) dados.distribuicao[k] = dados.distribuicao[k].map(p => p===nomeAntigo?novoNome:p);
   dados.posicoes.a = dados.posicoes.a.map(p => p===nomeAntigo?novoNome:p);
   dados.posicoes.b = dados.posicoes.b.map(p => p===nomeAntigo?novoNome:p);
@@ -394,18 +507,18 @@ function renderCoroinhas() {
   el.innerHTML = dados.coroinhas.map((c, i) => {
     if (editandoCoroinha === i) {
       return `<div class="edit-row">
-        <input type="text" id="edit-coroinha-${i}" value="${esc(c)}" maxlength="40" onkeydown="if(event.key==='Enter')salvarEdicaoCoroinha(${i});if(event.key==='Escape'){editandoCoroinha=null;renderCoroinhas();}">
-        <button class="btn-salvar" onclick="salvarEdicaoCoroinha(${i})">✓</button>
-        <button class="btn-cancelar" onclick="editandoCoroinha=null;renderCoroinhas()">✕</button>
+        <input type="text" aria-label="Editar coroinha" id="edit-coroinha-${i}" value="${html(c)}" maxlength="40" onkeydown="if(event.key==='Enter')salvarEdicaoCoroinha(${i});if(event.key==='Escape'){editandoCoroinha=null;renderCoroinhas();}">
+        <button class="btn-salvar" aria-label="Salvar coroinha" onclick="salvarEdicaoCoroinha(${i})">✓</button>
+        <button class="btn-cancelar" aria-label="Cancelar edição" onclick="editandoCoroinha=null;renderCoroinhas()">✕</button>
       </div>`;
     }
     const qt = Object.values(dados.distribuicao).filter(arr => arr.includes(c)).length;
     const badge = qt > 0 ? `<span class="badge-count">${qt} 📋</span>` : `<span class="badge-count" style="background:var(--cinza);color:var(--cinza-texto)">— 📋</span>`;
     return `<div class="lista-item">
-      <span class="nome">${c}</span>${badge}
+      <span class="nome">${html(c)}</span>${badge}
       <div class="acoes">
-        <button class="btn-editar" onclick="iniciarEdicaoCoroinha(${i})">✏️</button>
-        <button class="btn-perigo" onclick="removerCoroinha(${i})">🗑</button>
+        <button class="btn-editar" aria-label="Editar ${html(c)}" onclick="iniciarEdicaoCoroinha(${i})">✏️</button>
+        <button class="btn-perigo" aria-label="Remover ${html(c)}" onclick="removerCoroinha(${i})">🗑</button>
       </div>
     </div>`;
   }).join('');
@@ -458,15 +571,23 @@ function motivoBloqueio(funcao, coroinha) {
     }
   }
 
+  // Par Tocha/Sineta: incompatibilidade suspensa quando há 4 ou menos coroinhas
+  const poucosCoroinhas = dados.coroinhas.length <= 4;
+  function eParTochaSineta(a, b) {
+    return (a === 'Tocha' && b === 'Sineta') || (a === 'Sineta' && b === 'Tocha');
+  }
+
   // Incompatibilidade: funções que o coroinha já tem
   const funcoesDoCoroinha = dados.funcoes.filter(f2 => (dados.distribuicao[f2] || []).includes(coroinha));
   for (const fAtual of funcoesDoCoroinha) {
     if (regra.incomp.includes(fAtual)) {
-      return `${coroinha} já está em "${fAtual}", incompatível com ${funcao}`;
+      if (poucosCoroinhas && eParTochaSineta(funcao, fAtual)) { /* exceção: ≤4 coroinhas */ }
+      else return `${coroinha} já está em "${fAtual}", incompatível com ${funcao}`;
     }
     const regraAtual = regraFuncao(fAtual);
     if (regraAtual.incomp.includes(funcao)) {
-      return `${coroinha} já está em "${fAtual}", incompatível com ${funcao}`;
+      if (poucosCoroinhas && eParTochaSineta(fAtual, funcao)) { /* exceção: ≤4 coroinhas */ }
+      else return `${coroinha} já está em "${fAtual}", incompatível com ${funcao}`;
     }
     // checar naoMesmaPessoa no sentido inverso
     if (regraAtual.naoMesmaPessoa === funcao) {
@@ -492,6 +613,71 @@ function alertasDistribuicao() {
   return alertas;
 }
 
+function problemasEscala() {
+  const problemas = alertasDistribuicao().map(a => a.replace(/^⚠️\s*/, ''));
+  if (!dados.coroinhas.length) problemas.push('Nenhum coroinha cadastrado.');
+  const semPessoa = dados.funcoes.filter(f => !(dados.distribuicao[f] || []).length);
+  if (semPessoa.length) problemas.push(`${semPessoa.length} função(ões) sem ninguém atribuído.`);
+  const preenchidas = dados.posicoes.a.filter(Boolean).length + dados.posicoes.b.filter(Boolean).length + (getMissalNome() ? 1 : 0);
+  if (preenchidas < N_POSICOES * 2) problemas.push(`${N_POSICOES * 2 - preenchidas} posição(ões) ainda vazia(s).`);
+  return problemas;
+}
+
+function verificarEscala() {
+  const problemas = problemasEscala();
+  if (!problemas.length) mostrarAviso('✅ Escala completa e sem conflitos conhecidos.');
+  else confirmar('Escala incompleta', problemas.join(' '), () => irPara('distribuicao'));
+}
+
+function confirmarDistribuicaoAutomatica() {
+  if (!dados.coroinhas.length || !dados.funcoes.length) {
+    mostrarAviso('Cadastre funções e coroinhas antes de distribuir.'); return;
+  }
+  confirmar('Preencher automaticamente', 'As atribuições atuais serão mantidas e somente as vagas disponíveis serão preenchidas.', distribuirAutomaticamente);
+}
+
+function confirmarLimparDistribuicoes() {
+  const quantidade = Object.values(dados.distribuicao).reduce((total, lista) => total + (Array.isArray(lista) ? lista.length : 0), 0);
+  if (!quantidade) { mostrarAviso('Não há atribuições para limpar.'); return; }
+  confirmar('Limpar atribuições', `Remover todas as ${quantidade} atribuição(ões)? Coroinhas, funções e posições serão preservados.`, () => {
+    dados.funcoes.forEach(funcao => { dados.distribuicao[funcao] = []; });
+    salvar(); renderDistribuicao();
+    mostrarAviso('✅ Todas as atribuições foram removidas.');
+  });
+}
+
+function distribuirAutomaticamente() {
+  const carga = Object.fromEntries(dados.coroinhas.map(c => [c, 0]));
+  Object.values(dados.distribuicao).forEach(lista => (lista || []).forEach(c => { if (c in carga) carga[c]++; }));
+  const alvo = funcao => {
+    const regra = regraFuncao(funcao);
+    if (regra.exato) return regra.exato;
+    if (regra.multiplo) return regra.multiplo[0];
+    return regra.max === 0 ? 0 : 1;
+  };
+  const ordem = [...dados.funcoes].sort((a, b) => {
+    const ra = regraFuncao(a), rb = regraFuncao(b);
+    return (rb.incomp.length + (rb.naoMesmaPessoa ? 5 : 0)) - (ra.incomp.length + (ra.naoMesmaPessoa ? 5 : 0));
+  });
+  let adicionadas = 0;
+  ordem.forEach(funcao => {
+    if (!dados.distribuicao[funcao]) dados.distribuicao[funcao] = [];
+    while (dados.distribuicao[funcao].length < alvo(funcao)) {
+      const candidatos = dados.coroinhas
+        .filter(c => !dados.distribuicao[funcao].includes(c) && !motivoBloqueio(funcao, c))
+        .sort((a, b) => carga[a] - carga[b] || a.localeCompare(b, 'pt-BR'));
+      if (!candidatos.length) break;
+      dados.distribuicao[funcao].push(candidatos[0]);
+      carga[candidatos[0]]++; adicionadas++;
+    }
+  });
+  salvar(); renderDistribuicao();
+  const pendencias = alertasDistribuicao().length;
+  mostrarAviso(adicionadas
+    ? `✨ ${adicionadas} atribuição(ões) adicionada(s)${pendencias ? '; revise os alertas.' : '.'}`
+    : 'Nenhuma vaga pôde ser preenchida automaticamente.');
+}
+
 // ─── DISTRIBUIÇÃO ───
 function toggleCoroinha(funcao, coroinha) {
   if (!dados.distribuicao[funcao]) dados.distribuicao[funcao] = [];
@@ -506,6 +692,9 @@ function toggleCoroinha(funcao, coroinha) {
   }
   salvar(); renderDistribuicao();
 }
+function toggleCoroinhaPorIndice(funcaoIdx, coroinhaIdx) {
+  toggleCoroinha(dados.funcoes[funcaoIdx], dados.coroinhas[coroinhaIdx]);
+}
 
 let avisoTimer = null;
 function mostrarAviso(msg) {
@@ -513,6 +702,8 @@ function mostrarAviso(msg) {
   if (!el) {
     el = document.createElement('div');
     el.id = 'aviso-flutuante';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
     el.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#8c0d1f;color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;z-index:300;max-width:88vw;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.25);transition:opacity 0.3s';
     document.body.appendChild(el);
   }
@@ -529,7 +720,7 @@ function renderDistribuicao() {
   const alertas = alertasDistribuicao();
   const alertaHtml = alertas.length ? alertas.map(a => `<div class="info-box" style="margin-bottom:8px;border-left-color:#c0392b;background:#fff5f5;color:#8c0d1f">${a}</div>`).join('') : '';
 
-  const lista = dados.funcoes.map(f => {
+  const lista = dados.funcoes.map((f, funcaoIdx) => {
     const atrib = dados.distribuicao[f] || [];
     const regra = regraFuncao(f);
     let limiteLabel = '';
@@ -537,21 +728,21 @@ function renderDistribuicao() {
     else if (regra.multiplo) limiteLabel = ` · sempre ${regra.multiplo.join(' ou ')}`;
     else if (regra.max === 1) limiteLabel = ' · apenas 1';
     else if (regra.max) limiteLabel = ` · até ${regra.max}`;
-    const chips = dados.coroinhas.map(c => {
+    const chips = dados.coroinhas.map((c, coroinhaIdx) => {
       const sel = atrib.includes(c);
       if (sel) {
-        return `<span class="chip selecionado" onclick="toggleCoroinha('${esc2(f)}','${esc2(c)}')">${c} ✓</span>`;
+        return `<button class="chip selecionado" aria-pressed="true" onclick="toggleCoroinhaPorIndice(${funcaoIdx},${coroinhaIdx})">${html(c)} ✓</button>`;
       }
       const motivo = motivoBloqueio(f, c);
       if (motivo) {
-        return `<span class="chip" style="opacity:0.35;cursor:not-allowed" title="${motivo}">${c}</span>`;
+        return `<button class="chip" disabled style="opacity:0.35;cursor:not-allowed" title="${html(motivo)}">${html(c)}</button>`;
       }
-      return `<span class="chip" onclick="toggleCoroinha('${esc2(f)}','${esc2(c)}')">${c}</span>`;
+      return `<button class="chip" aria-pressed="false" onclick="toggleCoroinhaPorIndice(${funcaoIdx},${coroinhaIdx})">${html(c)}</button>`;
     }).join('');
     return `<div class="tarefa-bloco">
-      <div class="tarefa-nome">📋 ${f}<span style="font-size:11px;color:var(--cinza-texto);font-family:'Nunito',sans-serif;font-weight:400;margin-left:6px">${limiteLabel}</span></div>
+      <div class="tarefa-nome">📋 ${html(f)}<span style="font-size:11px;color:var(--cinza-texto);font-family:'Nunito',sans-serif;font-weight:400;margin-left:6px">${limiteLabel}</span></div>
       <div class="pessoas-chips">${chips}</div>
-      <div class="atrib-texto">${atrib.length ? atrib.join(' · ') : 'Ninguém atribuído'}</div>
+      <div class="atrib-texto">${atrib.length ? atrib.map(html).join(' · ') : 'Ninguém atribuído'}</div>
     </div>`;
   }).join('');
 
@@ -573,16 +764,20 @@ function setPosicao(lado, idx, valor) {
 
 function renderPosicoes() {
   const missalNome = getMissalNome();
+  if (!dados.posicoes || typeof dados.posicoes !== 'object') dados.posicoes = {};
   ['a','b'].forEach(lado => {
     const el = document.getElementById('posicoes-' + lado);
-    let html = '';
+    if (!el) return;
+    if (!Array.isArray(dados.posicoes[lado])) dados.posicoes[lado] = [];
+    dados.posicoes[lado] = Array.from({ length: N_POSICOES }, (_, i) => dados.posicoes[lado][i] || '');
+    let linhasHtml = '';
     for (let i = 0; i < N_POSICOES; i++) {
       const isFixo = lado === MISSAL_FIXO_LADO && i === MISSAL_FIXO_POS;
       if (isFixo) {
         const label = missalNome || 'Missal (atribua na distribuição)';
-        html += `<div class="posicao-row">
+        linhasHtml += `<div class="posicao-row">
           <span class="pos-num">${i+1}</span>
-          <span class="pos-fixo-label">🔒 ${label}</span>
+          <span class="pos-fixo-label">🔒 ${html(label)}</span>
         </div>`;
       } else {
         // nomes já usados em TODAS as posições (ambos os lados), exceto a posição atual
@@ -599,18 +794,18 @@ function renderPosicoes() {
         const atual = dados.posicoes[lado][i];
         const opcoes = dados.coroinhas
           .filter(c => !usados.has(c) || c === atual)
-          .map(c => `<option value="${esc(c)}" ${atual===c?'selected':''}>${c}</option>`)
+          .map(c => `<option value="${html(c)}" ${atual===c?'selected':''}>${html(c)}</option>`)
           .join('');
-        html += `<div class="posicao-row">
+        linhasHtml += `<div class="posicao-row">
           <span class="pos-num">${i+1}</span>
-          <select class="pos-select" onchange="setPosicao('${lado}',${i},this.value)">
+          <select class="pos-select" aria-label="Lado ${lado.toUpperCase()}, posição ${i+1}" onchange="setPosicao('${lado}',${i},this.value)">
             <option value="">—</option>
             ${opcoes}
           </select>
         </div>`;
       }
     }
-    el.innerHTML = html;
+    el.innerHTML = linhasHtml;
   });
 }
 
@@ -657,94 +852,133 @@ function nomeArquivo() {
   return n;
 }
 
+function listaPortugues(arr) {
+  if (!arr.length) return '';
+  if (arr.length === 1) return arr[0];
+  return arr.slice(0, -1).join(', ') + ' e ' + arr[arr.length - 1];
+}
+
 function gerarTexto() {
-  const evento = dados.evento.nome || '';
+  const evento   = dados.evento.nome || '';
   const dataHora = formatarDataHora();
-  const linhas = [];
+  const linhas   = [];
+  const missalN  = getMissalNome();
+
   linhas.push('✝ COROINHAS — DISTRIBUIÇÃO DE TAREFAS');
   const cab = [evento, dataHora].filter(Boolean).join(' — ');
   if (cab) linhas.push('📅 ' + cab);
   linhas.push('');
 
-  if (abaExport === 'funcoes') {
+  function secaoPorFuncao() {
     linhas.push('📋 POR FUNÇÃO:');
     linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
     dados.funcoes.forEach(f => {
-      const pessoas = dados.distribuicao[f] || [];
-      linhas.push('▸ ' + f);
-      pessoas.length ? pessoas.forEach(p => linhas.push('   • ' + p)) : linhas.push('   (ninguém atribuído)');
-      linhas.push('');
+      const pess = dados.distribuicao[f] || [];
+      linhas.push(f + ': ' + (pess.length ? listaPortugues(pess) : '(ninguém)'));
     });
-  } else if (abaExport === 'coroinhas') {
-    linhas.push('👤 POR COROINHA:');
-    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
-    dados.coroinhas.forEach(c => {
-      const tarefas = dados.funcoes.filter(f => (dados.distribuicao[f]||[]).includes(c));
-      linhas.push('▸ ' + c);
-      tarefas.length ? tarefas.forEach(t => linhas.push('   • ' + t)) : linhas.push('   (sem funções)');
-      linhas.push('');
-    });
-  } else if (abaExport === 'completo') {
-    // Por coroinha
-    linhas.push('👤 POR COROINHA:');
-    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
-    dados.coroinhas.forEach(c => {
-      const tarefas = dados.funcoes.filter(f => (dados.distribuicao[f]||[]).includes(c));
-      linhas.push('▸ ' + c);
-      tarefas.length ? tarefas.forEach(t => linhas.push('   • ' + t)) : linhas.push('   (sem funções)');
-      linhas.push('');
-    });
-    // Por função
-    linhas.push('📋 POR FUNÇÃO:');
-    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
-    dados.funcoes.forEach(f => {
-      const pessoas = dados.distribuicao[f] || [];
-      linhas.push('▸ ' + f);
-      pessoas.length ? pessoas.forEach(p => linhas.push('   • ' + p)) : linhas.push('   (ninguém atribuído)');
-      linhas.push('');
-    });
-    // Posições
-    const missalNomeC = getMissalNome();
-    linhas.push('📍 POSIÇÕES:');
-    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
-    linhas.push('');
-    linhas.push('▸ LADO A');
-    for (let i = 0; i < N_POSICOES; i++) {
-      linhas.push(`   ${i+1}. ${dados.posicoes.a[i] || '—'}`);
-    }
-    linhas.push('');
-    linhas.push('▸ LADO B');
-    for (let i = 0; i < N_POSICOES; i++) {
-      const isFixoC = i === MISSAL_FIXO_POS;
-      const nomeC = isFixoC ? (missalNomeC ? missalNomeC + ' (Missal)' : 'Missal') : (dados.posicoes.b[i] || '—');
-      linhas.push(`   ${i+1}. ${nomeC}`);
-    }
-    linhas.push('');
-  } else {
-    // posições — vertical para ficar legível no WhatsApp
-    const missalNome = getMissalNome();
-    linhas.push('📍 POSIÇÕES:');
-    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
-    linhas.push('');
-    linhas.push('▸ LADO A');
-    for (let i = 0; i < N_POSICOES; i++) {
-      const nome = dados.posicoes.a[i] || '—';
-      linhas.push(`   ${i+1}. ${nome}`);
-    }
-    linhas.push('');
-    linhas.push('▸ LADO B');
-    for (let i = 0; i < N_POSICOES; i++) {
-      const isFixo = i === MISSAL_FIXO_POS;
-      const nome = isFixo ? (missalNome ? missalNome + ' (Missal)' : 'Missal') : (dados.posicoes.b[i] || '—');
-      linhas.push(`   ${i+1}. ${nome}`);
-    }
     linhas.push('');
   }
+
+  function secaoPorCoroinha() {
+    linhas.push('👤 POR COROINHA:');
+    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
+    dados.coroinhas.forEach(c => {
+      const tar = dados.funcoes.filter(f => (dados.distribuicao[f]||[]).includes(c));
+      linhas.push(c + ': ' + (tar.length ? listaPortugues(tar) : '(sem funções)'));
+    });
+    linhas.push('');
+  }
+
+  function secaoPosicoes() {
+    linhas.push('📍 POSIÇÕES:');
+    linhas.push('━━━━━━━━━━━━━━━━━━━━━━━━━');
+    linhas.push('');
+    linhas.push('Lado A');
+    dados.posicoes.a.forEach((n, i) => {
+      if (n) linhas.push((i+1) + '. ' + n);
+    });
+    linhas.push('');
+    linhas.push('Lado B');
+    dados.posicoes.b.forEach((n, i) => {
+      const isFixo = i === MISSAL_FIXO_POS;
+      const nome = isFixo ? (missalN ? missalN + ' (Missal)' : null) : (n || null);
+      if (nome) linhas.push((i+1) + '. ' + nome);
+    });
+    linhas.push('');
+  }
+
+  if      (abaExport === 'funcoes')   { secaoPorFuncao(); }
+  else if (abaExport === 'coroinhas') { secaoPorCoroinha(); }
+  else if (abaExport === 'posicoes')  { secaoPosicoes(); }
+  else { secaoPorCoroinha(); secaoPorFuncao(); secaoPosicoes(); }
+
   return linhas.join('\n');
 }
 
 function renderExport() {
   document.getElementById('export-preview').textContent = gerarTexto();
+  renderHistorico();
+}
+
+function copiaEscalaAtual() {
+  const copia = normalizarDados({ ...dados, historico: [] });
+  copia.historico = [];
+  return copia;
+}
+
+function salvarEscalaNoHistorico() {
+  if (!validarDataHora()) return;
+  const registro = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    salvoEm: new Date().toISOString(),
+    dados: copiaEscalaAtual()
+  };
+  dados.historico.unshift(registro);
+  dados.historico = dados.historico.slice(0, 100);
+  salvar(); renderHistorico(); mostrarAviso('✅ Escala salva no histórico local.');
+}
+
+function aplicarRegistroHistorico(idx, duplicar) {
+  const registro = dados.historico[idx]; if (!registro) return;
+  const historicoAtual = dados.historico;
+  const restaurada = normalizarDados({ ...registro.dados, historico: [] });
+  if (duplicar) restaurada.evento = { nome: restaurada.evento.nome, data: '', hora: '' };
+  restaurada.historico = historicoAtual;
+  dados = restaurada; salvar();
+  renderFuncoes(); renderCoroinhas();
+  document.getElementById('input-evento').value = dados.evento.nome;
+  document.getElementById('input-data').value = dados.evento.data;
+  document.getElementById('input-hora').value = dados.evento.hora;
+  renderExport();
+  mostrarAviso(duplicar ? 'Cópia criada. Informe a nova data e o horário.' : 'Escala reaberta.');
+}
+
+function reabrirEscala(idx) {
+  confirmar('Reabrir escala', 'A escala atual será substituída. O histórico continuará preservado.', () => aplicarRegistroHistorico(idx, false));
+}
+function duplicarEscala(idx) { aplicarRegistroHistorico(idx, true); }
+function removerEscalaHistorico(idx) {
+  confirmar('Remover do histórico', 'Essa escala salva será removida deste dispositivo.', () => {
+    dados.historico.splice(idx, 1); salvar(); renderHistorico();
+  });
+}
+
+function renderHistorico() {
+  const el = document.getElementById('lista-historico'); if (!el) return;
+  if (!dados.historico.length) { el.innerHTML = '<p class="vazio">Nenhuma escala salva.</p>'; return; }
+  el.innerHTML = dados.historico.map((registro, idx) => {
+    const evt = registro.dados.evento;
+    const titulo = evt.nome || 'Celebração sem nome';
+    const quando = [evt.data ? evt.data.split('-').reverse().join('/') : '', evt.hora ? evt.hora + 'h' : ''].filter(Boolean).join(' · ');
+    return `<div class="lista-item">
+      <span class="nome"><strong>${html(titulo)}</strong><br><small>${html(quando || 'Sem data')}</small></span>
+      <div class="acoes">
+        <button class="btn-editar" aria-label="Reabrir ${html(titulo)}" onclick="reabrirEscala(${idx})">↗️</button>
+        <button class="btn-editar" aria-label="Duplicar ${html(titulo)}" onclick="duplicarEscala(${idx})">📄</button>
+        <button class="btn-perigo" aria-label="Remover ${html(titulo)} do histórico" onclick="removerEscalaHistorico(${idx})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 async function compartilhar() {
@@ -805,12 +1039,9 @@ function carregarBackup(event) {
   const reader = new FileReader();
   reader.onload = e => {
     try {
-      const imp = JSON.parse(e.target.result);
-      if (!imp.funcoes || !imp.coroinhas) throw new Error();
+      const imp = normalizarDados(JSON.parse(e.target.result));
       confirmar('Carregar backup', 'Isso substituirá todos os dados atuais. Confirmar?', () => {
         dados = imp;
-        if (!dados.posicoes) dados.posicoes = { a: Array(N_POSICOES).fill(''), b: Array(N_POSICOES).fill('') };
-        if (!dados.evento) dados.evento = { nome: '', data: '', hora: '' };
         salvar(); renderFuncoes(); renderCoroinhas();
         document.getElementById('input-evento').value = dados.evento.nome || '';
         document.getElementById('input-data').value = dados.evento.data || '';
@@ -822,13 +1053,312 @@ function carregarBackup(event) {
   reader.readAsText(file); event.target.value = '';
 }
 
+// ─── CANVAS COMPARTILHADO ───
+function validarDataHora() {
+  if (!dados.evento.data || !dados.evento.hora) {
+    mostrarAviso('⚠️ Preencha a data e o horário antes de exportar.');
+    return false;
+  }
+  return true;
+}
+
+async function gerarCanvas() {
+  await document.fonts.ready;
+
+  const SC    = 2;        // 2× para qualidade
+  const LW    = 794;      // largura = A4 a 96 dpi
+  const W     = LW * SC;
+  const mg    = 36 * SC;
+  const cW    = W - mg * 2;
+  const vm    = '#c0112b', vmD = '#8c0d1f';
+  const vmL   = '#f5e8ea'; // fundo claro (economiza tinta)
+  const cinza = '#888888', preto = '#1a1a1a';
+
+  const canvas = document.createElement('canvas');
+  canvas.width  = W;
+  canvas.height = 8000 * SC;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, canvas.height);
+
+  function rRect(x, yy, w, h, r, fill, strokeColor) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, yy);
+    ctx.arcTo(x+w, yy,   x+w, yy+h, r);
+    ctx.arcTo(x+w, yy+h, x,   yy+h, r);
+    ctx.arcTo(x,   yy+h, x,   yy,   r);
+    ctx.arcTo(x,   yy,   x+w, yy,   r);
+    ctx.closePath();
+    ctx.fillStyle = fill;
+    ctx.fill();
+    if (strokeColor) { ctx.strokeStyle = strokeColor; ctx.lineWidth = 1*SC; ctx.stroke(); }
+  }
+
+  let y = 0;
+
+  // ── Cabeçalho sóbrio (sem fundo colorido) ──────────────────────────────
+  // Faixa decorativa fina no topo
+  ctx.fillStyle = vm;
+  ctx.fillRect(0, 0, W, 4*SC);
+
+  // Título
+  ctx.fillStyle = vmD;
+  ctx.textAlign = 'center';
+  ctx.font = `bold ${22*SC}px 'Lora', serif`;
+  ctx.fillText('COROINHAS — DISTRIBUIÇÃO DE TAREFAS', W/2, 36*SC);
+
+  // Info do evento
+  const cabEvt = [dados.evento.nome, formatarDataHora()].filter(Boolean).join(' — ');
+  if (cabEvt) {
+    ctx.fillStyle = cinza;
+    ctx.font = `${13*SC}px 'Nunito', sans-serif`;
+    ctx.fillText(cabEvt, W/2, 56*SC, W - mg*2);
+    y = 70*SC;
+  } else {
+    y = 50*SC;
+  }
+
+  // Linha separadora
+  ctx.fillStyle = vm;
+  ctx.fillRect(mg, y, cW, 1.5*SC);
+  y += 20*SC;
+
+  // ── Helper: título de seção ──────────────────────────────────────────────
+  function tituloSecao(titulo) {
+    ctx.fillStyle = vmD;
+    ctx.font = `bold ${13*SC}px 'Nunito', sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText(titulo, mg, y + 12*SC);
+    ctx.fillStyle = '#e0e0e0';
+    ctx.fillRect(mg, y + 16*SC, cW, 1*SC);
+    y += 26*SC;
+  }
+
+  // ── Por Coroinha — 3 colunas com alinhamento por linha ──────────────────
+  tituloSecao('POR COROINHA');
+
+  const nCols = 3, colGap = 12*SC;
+  const colW  = (cW - colGap*(nCols-1)) / nCols;
+  const nRows = Math.max(1, Math.ceil(dados.coroinhas.length / nCols));
+
+  const colunas = [[], [], []];
+  dados.coroinhas.forEach((nome, i) => {
+    colunas[Math.min(Math.floor(i/nRows), 2)].push(nome);
+  });
+
+  // Geometria do bloco de cada coroinha
+  const nameH    = 26*SC;  // altura do retângulo do nome
+  const namePad  = 16*SC;  // distância do topo do bloco até baseline do nome (dentro do rect)
+  const funcOff  = 40*SC;  // distância do topo do bloco até baseline da 1ª função (fora do rect)
+  const funcLineH = 17*SC;
+  const rowGapH   = 12*SC;
+
+  function calcH(coroinha) {
+    const n = dados.funcoes.filter(f => (dados.distribuicao[f]||[]).includes(coroinha)).length;
+    return funcOff + (n ? n*funcLineH : 17*SC) + rowGapH;
+  }
+
+  // Altura máxima por linha (alinhamento)
+  const rowHeights = Array.from({length: nRows}, (_, row) => {
+    let maxH = funcOff + 17*SC + rowGapH; // mínimo
+    for (let col = 0; col < nCols; col++) {
+      const co = colunas[col][row];
+      if (co) maxH = Math.max(maxH, calcH(co));
+    }
+    return maxH;
+  });
+
+  // Offsets acumulados de cada linha
+  const rowOffsets = [0];
+  rowHeights.forEach(h => rowOffsets.push(rowOffsets[rowOffsets.length-1] + h));
+
+  const startY = y;
+
+  for (let col = 0; col < nCols; col++) {
+    const cx = mg + col*(colW + colGap);
+    for (let row = 0; row < nRows; row++) {
+      const coroinha = colunas[col][row];
+      if (!coroinha) continue;
+      const cy = startY + rowOffsets[row];
+      const tarefas = dados.funcoes.filter(f => (dados.distribuicao[f]||[]).includes(coroinha));
+
+      // Bloco do nome — fundo claro com borda
+      rRect(cx, cy, colW, nameH, 5*SC, vmL, vmD);
+      ctx.fillStyle = vmD;
+      ctx.font = `bold ${11*SC}px 'Nunito', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(coroinha, cx + colW/2, cy + namePad, colW - 8*SC);
+
+      // Funções — abaixo do bloco com espaço suficiente
+      ctx.textAlign = 'left';
+      let fy = cy + funcOff;  // baseline da 1ª função, bem abaixo do bloco
+      if (!tarefas.length) {
+        ctx.fillStyle = cinza;
+        ctx.font = `italic ${10*SC}px 'Nunito', sans-serif`;
+        ctx.fillText('(sem funções)', cx + 6*SC, fy);
+      } else {
+        ctx.fillStyle = preto;
+        ctx.font = `${11*SC}px 'Nunito', sans-serif`;
+        for (const t of tarefas) {
+          ctx.fillText('· ' + t, cx + 5*SC, fy, colW - 8*SC);
+          fy += funcLineH;
+        }
+      }
+    }
+  }
+
+  y = startY + rowOffsets[nRows] + 24*SC;
+
+  // ── Posições — 2 colunas ────────────────────────────────────────────────
+  tituloSecao('POSIÇÕES');
+
+  const posColW    = (cW - 14*SC) / 2;
+  const missalNome = getMissalNome();
+
+  // Headers com fundo claro
+  rRect(mg, y, posColW, 28*SC, 6*SC, vmL, vmD);
+  ctx.fillStyle = vmD;
+  ctx.font = `bold ${12*SC}px 'Nunito', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('LADO A', mg + posColW/2, y + 19*SC);
+
+  rRect(mg + posColW + 14*SC, y, posColW, 28*SC, 6*SC, vmL, vmD);
+  ctx.fillStyle = vmD;  // repor após rRect (que muda fillStyle para vmL)
+  ctx.fillText('LADO B', mg + posColW + 14*SC + posColW/2, y + 19*SC);
+  y += 31*SC;
+
+  // fallback: tenta distribuição de Missal, depois posicoes.b[0]
+  const nomeFixoB = missalNome || dados.posicoes.b[MISSAL_FIXO_POS] || null;
+
+  for (let i = 0; i < N_POSICOES; i++) {
+    const nomeA  = dados.posicoes.a[i] || '—';
+    const isFixo = i === MISSAL_FIXO_POS;
+    const nomeB  = isFixo ? (nomeFixoB ? nomeFixoB + ' (Missal)' : 'Missal') : (dados.posicoes.b[i] || '—');
+    const rowH   = 26*SC;
+    // Fundo alternado muito suave
+    const bg = i % 2 === 0 ? '#f5f5f5' : '#ffffff';
+    ctx.fillStyle = bg;
+    ctx.fillRect(mg,                   y, posColW, rowH);
+    ctx.fillRect(mg + posColW + 14*SC, y, posColW, rowH);
+    // Linha divisória
+    ctx.fillStyle = '#e8e8e8';
+    ctx.fillRect(mg,                   y + rowH - SC, posColW, SC);
+    ctx.fillRect(mg + posColW + 14*SC, y + rowH - SC, posColW, SC);
+    // Número
+    ctx.fillStyle = vm;
+    ctx.font = `bold ${11*SC}px 'Nunito', sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText(String(i+1), mg + 8*SC,              y + 17*SC);
+    ctx.fillText(String(i+1), mg + posColW + 22*SC,   y + 17*SC);
+    // Nome
+    ctx.fillStyle = preto;
+    ctx.font = `${11*SC}px 'Nunito', sans-serif`;
+    ctx.fillText(nomeA, mg + 22*SC,            y + 17*SC, posColW - 26*SC);
+    ctx.fillText(nomeB, mg + posColW + 36*SC,  y + 17*SC, posColW - 40*SC);
+    y += rowH;
+  }
+
+  // ── Rodapé ──────────────────────────────────────────────────────────────
+  y += 14*SC;
+  ctx.fillStyle = '#cccccc';
+  ctx.fillRect(mg, y, cW, SC);
+  y += 10*SC;
+  ctx.fillStyle = cinza;
+  ctx.font = `${9*SC}px 'Nunito', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('Coroinhas App · ' + new Date().toLocaleDateString('pt-BR'), W/2, y);
+  y += 18*SC;
+
+  // Cortar ao tamanho real
+  const out = document.createElement('canvas');
+  out.width  = W;
+  out.height = y;
+  out.getContext('2d').drawImage(canvas, 0, 0);
+  return out;
+}
+
+// ─── IMAGEM ───
+async function gerarImagem() {
+  if (!validarDataHora()) return;
+  const btn = document.getElementById('btn-img');
+  const labelOrig = btn.textContent;
+  btn.textContent = '⏳ Gerando...'; btn.disabled = true;
+  try {
+    const canvas2  = await gerarCanvas();
+    const dataUrl  = canvas2.toDataURL('image/png');
+    const filename = (nomeArquivo() || 'coroinhas') + '.png';
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], filename, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Coroinhas' }); return;
+    }
+    if (window.gonative) {
+      const win = window.open(dataUrl, '_blank');
+      if (!win) mostrarAviso('Habilite pop-ups para visualizar a imagem.');
+      return;
+    }
+    const a = document.createElement('a');
+    a.href = dataUrl; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  } catch(e) { mostrarAviso('Erro ao gerar imagem: ' + e.message); }
+  finally { btn.textContent = labelOrig; btn.disabled = false; }
+}
+
+// ─── PDF A4 ───
+async function gerarPDF() {
+  if (!validarDataHora()) return;
+  const btn = document.getElementById('btn-pdf');
+  const labelOrig = btn.textContent;
+  btn.textContent = '⏳ Gerando...'; btn.disabled = true;
+  try {
+    if (!window.jspdf) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        s.onload = res; s.onerror = () => rej(new Error('Falha ao carregar jsPDF'));
+        document.head.appendChild(s);
+      });
+    }
+    const canvas2 = await gerarCanvas();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    // A4: 210 × 297 mm; canvas width = A4 em pixels
+    const pageW_mm = 210, pageH_mm = 297;
+    const pageH_px = Math.round(canvas2.width * pageH_mm / pageW_mm);
+    const pages = Math.ceil(canvas2.height / pageH_px);
+    for (let p = 0; p < pages; p++) {
+      if (p > 0) doc.addPage();
+      const slice = document.createElement('canvas');
+      slice.width  = canvas2.width;
+      slice.height = pageH_px;
+      const sCtx = slice.getContext('2d');
+      sCtx.fillStyle = '#ffffff';
+      sCtx.fillRect(0, 0, slice.width, slice.height);
+      sCtx.drawImage(canvas2, 0, -p * pageH_px);
+      doc.addImage(slice.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, pageW_mm, pageH_mm);
+    }
+    const filename = (nomeArquivo() || 'coroinhas') + '.pdf';
+    if (window.gonative) {
+      const uri = doc.output('datauristring');
+      const a = document.createElement('a');
+      a.href = uri; a.target = '_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    } else {
+      doc.save(filename);
+    }
+  } catch(e) { mostrarAviso('Erro ao gerar PDF: ' + e.message); }
+  finally { btn.textContent = labelOrig; btn.disabled = false; }
+}
+
 // ─── UTILS ───
-function esc(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
-function esc2(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+function html(valor) {
+  return String(valor).replace(/[&<>"']/g, caractere => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[caractere]);
+}
 
 // ─── SERVICE WORKER ───
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => { navigator.serviceWorker.register('/coroinhas/sw.js').catch(()=>{}); });
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(console.warn); });
 }
 
 // ─── INIT ───
@@ -838,6 +1368,15 @@ renderCoroinhas();
 document.getElementById('input-evento').value = dados.evento.nome || '';
 document.getElementById('input-data').value = dados.evento.data || '';
 document.getElementById('input-hora').value = dados.evento.hora || '';
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ano-atual').textContent = new Date().getFullYear();
+});
 </script>
+<!-- COPYRIGHT -->
+<footer style="text-align:center;padding:18px 14px 10px;font-family:'Nunito',sans-serif;font-size:11px;color:var(--cinza-texto);letter-spacing:0.3px;">
+  © <span id="ano-atual">2026</span> Rafael Gesser · Coroinhas · Todos os direitos reservados
+</footer>
+
+</div><!-- /app-shell -->
 </body>
 </html>

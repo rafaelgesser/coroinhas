@@ -1,10 +1,10 @@
-const CACHE = 'coroinhas-v2';
+const CACHE = 'coroinhas-v4';
 const ASSETS = [
-  'https://rafaelgesser.github.io/coroinhas/',
-  'https://rafaelgesser.github.io/coroinhas/index.html',
-  'https://rafaelgesser.github.io/coroinhas/manifest.json',
-  'https://rafaelgesser.github.io/coroinhas/icon-192.png',
-  'https://rafaelgesser.github.io/coroinhas/icon-512.png'
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', e => {
@@ -24,10 +24,14 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request)
-      .then(cached => cached || fetch(e.request)
-        .catch(() => caches.match('https://rafaelgesser.github.io/coroinhas/'))
-      )
+    fetch(e.request)
+      .then(response => {
+        const copy = response.clone();
+        caches.open(CACHE).then(cache => cache.put(e.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(e.request).then(cached => cached || caches.match('./')))
   );
 });
